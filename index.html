@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>واجهة الغيابات – جامعة النهرين- كلية الهندسة - قسم هندسة الذكاء الاصطناعي والانسان الالي</title>
+<style>
+  /* توسيط خلايا جدول "اتصل بنا" بقوة */
+  #contact table th,
+  #contact table td {
+    text-align: center !important;
+    vertical-align: middle;
+  }
+
+  :root{
+    --bg:#f4f1e8; --panel:#fffaf0;
+    --accent:#2e7d32; --accent-2:#1b5e20; /* أخضر */
+    --title:#1b5e20; --shadow:0 2px 10px rgba(0,0,0,.08); --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:#222}
+
+  /*  (فيديو)  */
+  .hero{position:relative;width:100%;background:#000;line-height:0;margin-bottom:-1px;overflow:hidden}
+  .hero video{display:block;width:100%;height:auto;vertical-align:bottom}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--bg);pointer-events:none;z-index:1}
+  .hero-overlay{
+    position:absolute;inset:auto 0 10px 0;z-index:2;display:flex;flex-direction:row-reverse;
+    align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;color:#fff;
+    background:linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,.35), rgba(0,0,0,0));
+  }
+  .hero-text{font-weight:800;line-height:1.25;text-align:right;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+  .hero-text .line{display:block}
+  .hero-text .l1{font-size:clamp(22px,3.6vw,42px)}
+  .hero-text .l2{font-size:clamp(18px,3.0vw,36px)}
+  .hero-text .l3{font-size:clamp(16px,2.6vw,32px);font-weight:700}
+  .hero-logo{width:clamp(100px,18vw,220px);height:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.35))}
+
+  /*  الأزرار العلوية  */
+  .topbar{display:flex;gap:30px;justify-content:center;padding:24px}
+  .chip{
+    font-size:22px; padding:20px 36px; border-radius:18px;
+    background:var(--accent); color:#fff; font-weight:700; border:none; cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.25); transition:transform .2s ease, background .2s ease;
+    display:flex; align-items:center; gap:12px;
+  }
+  .chip:hover{transform:scale(1.07); background:var(--accent-2)}
+  .chip .icon{font-size:28px}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
+  .hidden{display:none}
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .button{display:flex;align-items:center;justify-content:center;background:#388e3c;color:#fff;font-weight:700;border-radius:12px;height:60px;cursor:pointer;box-shadow:var(--shadow)}
+  .button:hover{background:#2e7d32}
+  .back{background:#666}.back:hover{background:#555}
+
+  .cols{display:flex;flex-wrap:wrap;gap:16px}
+  .col{flex:1 1 340px;min-width:320px}
+  .col h3{margin:0 0 10px;color:var(--title)}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .open-btn{background:#eee;color:#000}
+  .open-btn:hover{background:#e2e2e2}
+
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0 14px}
+  .sel,.btn,.num{height:46px;border:none;border-radius:10px;box-shadow:var(--shadow);padding:0 14px;font-size:16px;font-weight:700}
+  .sel,.num{background:#fff}
+  .num{width:110px;text-align:center}
+  .btn{background:var(--accent);color:#fff;cursor:pointer}
+  .btn.gray{background:#666}
+  .btn:hover{opacity:.95}
+  .note{font-size:14px;color:#666;margin:6px 0 12px}
+  .panel{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto}
+  table{width:100%;border-collapse:collapse;min-width:1200px}
+  th,td{border:1px solid #ddd;padding:8px;text-align:center}
+  thead th{background:#efe9d6}
+  thead th.small{background:#f7f2e6;font-size:12px}
+  td.muted{color:#777;text-align:center;padding:24px}
+
+  /*  تمييز خلايا الإنذار  */
+  .warn-cell{background:#b00020 !important;color:#fff;font-weight:800;animation:pulse 1.2s ease-in-out infinite}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+  /*  نافذة تسجيل الدخول */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
+  .modal.open{display:flex}
+  .modal .box{width:min(92vw,420px);background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:18px;direction:rtl;text-align:right}
+  .modal h3{margin:0 0 8px;color:#222}
+  .form-row{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+  .form-row label{font-weight:700}
+  .input{height:44px;border:1px solid #ddd;border-radius:10px;padding:0 12px;font-size:16px}
+  .actions{display:flex;gap:8px;justify-content:flex-start;margin-top:8px}
+  .err{color:#b00020;font-size:14px;min-height:18px}
+
+  .site-footer{margin:30px auto 20px;max-width:1200px;padding:0 16px;color:#555;display:flex;justify-content:flex-start;align-items:center}
+
+  @media (max-width:720px){
+    .num{width:80px}
+    table{min-width:900px}
+    .hero-overlay{padding:10px 12px;gap:12px}
+    .chip{font-size:18px;padding:16px 24px}
+    .chip .icon{font-size:24px}
+  }
+
+  /*  تحسين الطباعة  */
+  @media print{
+    *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+    .hero,.topbar,.contact-float,
+    #register_home,#reg_stage,#reg_course,#reg_system,#reg_subjects,
+    .note,.bar,#logoutBtn,.site-footer{display:none !important;}
+    @page{ size: A4 landscape; margin: 8mm; }
+    html,body{ margin:0 !important; background:#fff !important; }
+    .wrap{ max-width:none !important; padding:0 !important; margin:0 !important; }
+    .card{ box-shadow:none !important; background:#fff !important; padding:0 !important; }
+    .panel{ overflow:visible !important; padding:0 !important; }
+    table{
+      width:100% !important; min-width:0 !important; table-layout:fixed !important; border-collapse:collapse !important;
+    }
+    th,td{
+      padding:3px !important; font-size:10.5px !important; line-height:1.2 !important;
+      white-space:normal !important; word-wrap:break-word !important; page-break-inside:avoid !important;
+    }
+    thead{ display:table-header-group; }
+  }
+
+  /* ترتيب مراحل 2×2 */
+  .stage-grid{grid-template-columns:repeat(2,minmax(220px,1fr))}
+  @media (max-width:720px){ .stage-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+  <!-- ====== الفيديو + الشعار ====== -->
+  <div class="hero">
+    <video autoplay muted loop playsinline>
+      <source src="1.77.mp4" type="video/mp4">
+      متصفحك لا يدعم تشغيل الفيديو.
+    </video>
+    <div class="hero-overlay">
+      <div class="hero-text">
+        <span class="line l1">جامعة النهرين</span>
+        <span class="line l2">كلية الهندسة</span>
+        <span class="line l3">قسم هندسة الذكاء الاصطناعي والإنسان الآلي</span>
+      </div>
+      <img class="hero-logo" src="logo1.png" alt="شعار قسم هندسة الذكاء الاصطناعي والإنسان الآلي">
+    </div>
+  </div>
+
+  <!-- أزرار الرأس (كبيرة وخضراء) -->
+  <div class="topbar">
+    <button class="chip" onclick="openProtected('stats','stats')"><span class="icon">📊</span> إحصائية الغيابات</button>
+    <button class="chip" onclick="openProtected('register_home','reg')"><span class="icon">📝</span> تسجيل الغيابات</button>
+  </div>
+
+  <div class="wrap">
+
+    <!-- تسجيل الغيابات -->
+    <div id="register_home" class="card hidden">
+      <h2 style="margin:6px 0 14px">تسجيل الغيابات</h2>
+      <div class="menu-grid" style="max-width:700px">
+        <div class="button" onclick="showSection('reg_stage')">اختر المرحلة الدراسية</div>
+      </div>
+    </div>
+
+    <div id="reg_stage" class="card hidden">
+      <h3 style="margin-top:0">اختر المرحلة</h3>
+      <div class="menu-grid stage-grid" style="max-width:780px">
+        <div class="button" onclick="goStage(1)">المرحلة الأولى</div>
+        <div class="button" onclick="goStage(2)">المرحلة الثانية</div>
+
+
+       <!-- <div class="button" onclick="goStage(3)">المرحلة الثالثة</div> تم ابطال التفعيل-->
+       <!-- <div class="button" onclick="goStage(4)">المرحلة الرابعة</div>تم ابطال التفعيل -->
+
+
+        <div class="button back" onclick="showSection('register_home')">رجوع</div>
+      </div>
+    </div>
+
+    <div id="reg_course" class="card hidden">
+      <h3 style="margin-top:0">اختر الكورس</h3>
+      <div class="menu-grid" style="max-width:780px">
+        <div class="button" onclick="goCourse(1)">الكورس الأول</div>
+        <div class="button" onclick="goCourse(2)">الكورس الثاني</div>
+        <div class="button back" onclick="showSection('reg_stage')">رجوع</div>
+      </div>
+    </div>
+
+    <div id="reg_system" class="card hidden">
+      <h3 style="margin-top:0">اختر نوع الدراسة</h3>
+      <div class="menu-grid" style="max-width:780px">
+        <div class="button" onclick="goSystem('morning')">الدراسة الصباحية</div>
+        <div class="button" onclick="goSystem('evening')">الدراسة المسائية</div>
+        <div class="button back" onclick="showSection('reg_course')">رجوع</div>
+      </div>
+    </div>
+
+    <div id="reg_subjects" class="card hidden">
+      <h3 style="margin-top:0" id="reg_title">مواد المرحلة الأولى – الكورس الأول – الدراسة الصباحية</h3>
+      <div class="cols">
+        <div class="col">
+          <h3>المواد النظرية</h3>
+          <div class="list" id="list_theory"></div>
+        </div>
+        <div class="col">
+          <h3>مواد التمارين والأونلاين</h3>
+          <div class="list" id="list_drill"></div>
+        </div>
+        <div class="col">
+          <h3>المواد العملية</h3>
+          <div class="list" id="list_lab"></div>
+        </div>
+      </div>
+      <div class="menu-grid" style="max-width:420px;margin-top:14px">
+        <div class="button back" onclick="showSection('reg_system')">رجوع</div>
+      </div>
+    </div>
+
+    <!-- الإحصائية (محميّة بتسجيل الدخول) -->
+    <div id="stats" class="card hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <h2 style="margin:6px 0 14px">إحصائية الغيابات</h2>
+        <div style="display:flex;gap:8px">
+          <button id="logoutBtn" class="chip" style="font-size:16px;padding:10px 16px" onclick="doLogout('stats')">تسجيل الخروج</button>
+        </div>
+      </div>
+
+      <div class="bar">
+        <label style="display:flex;align-items:center;gap:8px;background:#fff;padding:8px 12px;border-radius:10px;box-shadow:var(--shadow)">
+          <input type="checkbox" id="onlyAbsent" checked/>
+          <span>إظهار فقط من لديه غياب</span>
+        </label>
+
+        <select id="stageSel" class="sel">
+          <option value="1">المرحلة الأولى</option>
+          <option value="2">المرحلة الثانية</option>
+          <option value="3">المرحلة الثالثة</option>
+          <option value="4">المرحلة الرابعة</option>
+        </select>
+
+        <select id="courseSel" class="sel">
+          <option value="1">الكورس الأول</option>
+          <option value="2">الكورس الثاني</option>
+        </select>
+
+        <select id="systemSel" class="sel">
+          <option value="morning">الدراسة الصباحية</option>
+          <option value="evening">الدراسة المسائية</option>
+        </select>
+
+        <select id="groupSel" class="sel">
+          <option value="all">كل المجموعات</option>
+          <option value="theory">المواد النظرية</option>
+          <option value="drill">مواد التمارين والاونلاين</option>
+          <option value="lab">المواد العملية</option>
+        </select>
+
+        <select id="weekFromSel" class="sel"></select>
+        <span>إلى</span>
+        <select id="weekToSel" class="sel"></select>
+
+        <span>حدّ أدنى للمرّات:</span>
+        <input id="minTimes" type="number" class="num" value="1" min="0"/>
+
+        <button class="btn" onclick="buildReport()">تحديث الإحصائية</button>
+        <button class="btn gray" onclick="window.print()">طباعة / PDF</button>
+      </div>
+
+      <div class="note"><b></b></div>
+
+      <div class="panel">
+        <table>
+          <thead id="statsHead"></thead>
+          <tbody id="statsBody">
+            <tr><td class="muted">لا توجد سجلات حتى الآن.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== قسم اتصل بنا ===== -->
+    <div id="contact" class="card hidden" style="margin-top:18px">
+      <h2 style="margin:6px 0 14px;color:var(--title)">اتصل بنا – لجنة الغيابات</h2>
+      <p style="margin:0 0 10px">للاستفسارات والملاحظات، يمكن التواصل عبر البريد الإلكتروني التالي:</p>
+      <div class="panel" style="overflow:auto">
+        <table style="min-width:600px">
+          <thead>
+            <tr>
+              <th style="min-width:60px">ت</th>
+              <th style="min-width:220px">الاسم</th>
+              <th style="min-width:280px">الإيميل</th>
+              <th style="min-width:280px">الهيكل الإداري</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>م.د. عمر عدنان</td>
+              <td><a href="mailto:omar.a.abbas@nahrainuniv.edu.iq">omar.a.abbas@nahrainuniv.edu.iq</a></td>
+              <td>رئيس اللجنة</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>م.م. عمر عبدالرزاق نجم</td>
+              <td><a href="mailto:omar_hajem@nahrainuniv.edu.iq">omar_hajem@nahrainuniv.edu.iq</a></td>
+              <td>عضو اللجنة</td>
+                   </tr>
+            <tr>
+              <td>3</td>
+              <td>م.م عبدالمهيمن باسم قاسم</td>
+              <td><a href="mailto:abdulmohaymin.bassim@nahrainuniv.edu.iq">abdulmohaymin.bassim@nahrainuniv.edu.iq</a></td>
+              <td>عضو اللجنة</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>م.م. نور ماهر</td>
+              <td><a href="mailto:Noor.maher@nahrainuniv.edu.iq">Noor.maher@nahrainuniv.edu.iq</a></td>
+              <td>عضو اللجنة</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+
+  <!-- زر اتصل بنا العائم -->
+  <div class="contact-float" onclick="openContact()" title="اتصل بنا" style="position:fixed;left:16px;bottom:16px;z-index:9998;width:66px;height:66px;border-radius:12px;background:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer;user-select:none;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;">
+    <span style="font-size:12px;line-height:1.1;text-align:center">اتصل<br>بنا</span>
+  </div>
+
+  <!-- ====== نافذة تسجيل الدخول ====== -->
+  <div id="loginModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <h3>تسجيل الدخول للوصول</h3>
+      <div class="form-row">
+        <label for="loginEmail">البريد الجامعي</label>
+        <input id="loginEmail" class="input" type="email" placeholder="example@nahrainuniv.edu.iq" autocomplete="username">
+      </div>
+      <div class="form-row">
+        <label for="loginPass">كلمة المرور</label>
+        <input id="loginPass" class="input" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="err" id="loginErr"></div>
+      <div class="actions">
+        <button class="btn" onclick="attemptLogin()">تسجيل الدخول</button>
+        <button class="btn gray" onclick="closeLogin()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /*************** تنقّل الأقسام ***************/
+  function showSection(id){
+    document.querySelectorAll('.wrap > .card').forEach(div=>div.classList.add('hidden'));
+    const el = document.getElementById(id);
+    if(el){ el.classList.remove('hidden'); }
+    if(id==='stats'){ ensureWeeks(); }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function openContact(){
+    showSection('contact');
+    document.getElementById('contact').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  let currentStage = 1;
+  let currentCourse = 1;
+  let currentSystem = 'morning';
+
+  function goStage(n){ currentStage = n; showSection('reg_course'); }
+  function goCourse(n){ currentCourse = n; showSection('reg_system'); }
+  function goSystem(sys){
+    currentSystem = sys;
+    fillSubjectsForRegistration();
+    const stageTxt = ['','الأولى','الثانية','الثالثة','الرابعة'][currentStage] || '';
+    const courseTxt= (currentCourse==1?'الأول':'الثاني');
+    const sysTxt   = (currentSystem=='morning'?'الصباحية':'المسائية');
+    document.getElementById('reg_title').textContent =
+      `مواد المرحلة ${stageTxt} – الكورس ${courseTxt} – الدراسة ${sysTxt}`;
+    showSection('reg_subjects');
+  }
+
+  /*************** الحماية (مجموعتان مستقلتان) ***************/
+  const AUTH = {
+    stats: {
+      SALT: 'ai-eng-2025',
+      USERS: {
+     'shaimaa.mudhafar@nahrainuniv.edu.iq': '449e7936fae1db20a674a5c1b893628b5693c95c0da258c2da50c73fdf24a16f',
+     'Noor.maher@nahrainuniv.edu.iq':      'a454327e5d4b28605fcc8b2b6e6e1b23c2cdd43dc680842cc1ff45be1a68e96f',
+     'omar.a.abbas@nahrainuniv.edu.iq':    'f80a1833312a96e92ab373c991c992f4d4f10c3fc174a81c38012ef92de8be45',
+     'omar_hajem@nahrainuniv.edu.iq': 'ef11d389f886ddb13fa7de09d5c64c55149283eff1d8ba5e6a3cc90504097e26',
+     'abdulmohaymin.bassim@nahrainuniv.edu.iq':'a40e6f7890ae799d80002083182070a57a6f0e0ddb6c559908630ffd3d4b85f1',
+
+      }
+    },
+    reg: {
+      SALT: 'ai-eng-2025',
+      USERS: {
+     'shaimaa.mudhafar@nahrainuniv.edu.iq': '449e7936fae1db20a674a5c1b893628b5693c95c0da258c2da50c73fdf24a16f',
+     'Noor.maher@nahrainuniv.edu.iq':      'a454327e5d4b28605fcc8b2b6e6e1b23c2cdd43dc680842cc1ff45be1a68e96f',
+     'omar.a.abbas@nahrainuniv.edu.iq':    'f80a1833312a96e92ab373c991c992f4d4f10c3fc174a81c38012ef92de8be45',
+     'omar_hajem@nahrainuniv.edu.iq': 'ef11d389f886ddb13fa7de09d5c64c55149283eff1d8ba5e6a3cc90504097e26',
+     'abdulmohaymin.bassim@nahrainuniv.edu.iq':'a40e6f7890ae799d80002083182070a57a6f0e0ddb6c559908630ffd3d4b85f1',
+'wajdi.sadiq@nahrainuniv.edu.iq': 'b5f589da32296393d91196671c82f31ab4dab47e24563db7d3f9e3c32c51f1d9',
+'hamzah.salah@nahrainuniv.edu.iq': '06ac9a0daeceaac82e1705145cebf098785ea2e7a112fbe1e7fddab98c8ee1cb',
+'ahmed.a.radhi@nahrainuniv.edu.iq': '684b1efb23c69de8ed7f0702ff18c432a1ed2336e4614229360d36b79462be23',
+'mushtaq.almohammed@nahrainuniv.edu.iq': '97a82769f308700e5041d5b46dafe97877e3a1b5c28b3dd844607807de877500',
+'layth.mohammed.elc@nahrainuniv.edu.iq':'360451cf23238566bea312ad5ac98c7f86aec0bd2c4d154502fa2848cc64f497',
+'ahmed.hani.al-noori@nahrainuniv.edu.iq':'e8d48eadecb0727f654ad6725fa349c555d7172c11c8d7b0e8bfd46436516f94',
+'nawras.hussain@nahrainuniv.edu.iq':'dedd0d984971d07db6dcc03c8b1387dea51e4d4f7d69bfe127eca6b9c8f008fd',
+'maher.waleed@nahrainuniv.edu.iq':'9cfe31da35266567b1ec4fc24f2cfd80f7e18df3ebf0120a5f2c55adac4ef676',
+'Wasf.abdulhamid@nahrainuniv.edu.iq':'d0795f8ce7a933f16d4f8334e6ca1b93f6c4dd10e11a41cca75ff47a9a807312',
+'yasir.sabah@nahrainuniv.edu.iq':'dc8adb906e5e75702bcb16abdb05216b6b6fe79ed9b0ea4d038ae08b65059b0a',
+'ahmed.f.hussein@nahrainuniv.edu.iq':'f1086f920814b8cc859043b1ac439a279cee01479a5be212d5ef8d3688352062',
+'mustafa.saad@nahrainuniv.edu.iq':'1dc9d37814e8784553fb034fa5a7b337497775a8b517ea3a15a4a9fbab2070bd',
+'Dhuha.Abdulredha@nahrainuniv.edu.iq':'167c22803c24845507def383d06985d66f521a58d059924ab21b1c9fe837cede',
+'faisal.ahmed@nahrainuniv.edu.iq':'1387abafb28cd9e5da3bf6e700019e2f18d2a0e29a586d74a62eabc98d001217',
+
+
+      }
+    }
+  };
+
+  let pendingTarget = null;   // القسم المطلوب فتحه بعد الدخول
+  let pendingArea   = 'stats';// 'stats' أو 'reg'
+
+  function openProtected(targetId, area){
+    const key   = 'abs_user_' + area;
+    const users = AUTH[area]?.USERS || {};
+    const user  = sessionStorage.getItem(key);
+    if(user && users[user]){ showSection(targetId); return; }
+    pendingTarget = targetId;
+    pendingArea   = area;
+    openLogin();
+  }
+
+  function openLogin(){
+    const m = document.getElementById('loginModal');
+    m.classList.add('open'); m.setAttribute('aria-hidden','false');
+    document.getElementById('loginErr').textContent='';
+    setTimeout(()=>document.getElementById('loginEmail').focus(),50);
+  }
+  function closeLogin(){
+    const m = document.getElementById('loginModal');
+    m.classList.remove('open'); m.setAttribute('aria-hidden','true');
+    document.getElementById('loginPass').value='';
+  }
+  async function sha256Hex(str){
+    const enc = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    const arr = Array.from(new Uint8Array(buf));
+    return arr.map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  async function attemptLogin(){
+    const email = (document.getElementById('loginEmail').value||'').trim();
+    const pass  = document.getElementById('loginPass').value||'';
+    const errEl = document.getElementById('loginErr');
+
+    if(!email || !pass){ errEl.textContent='يرجى إدخال البريد وكلمة المرور.'; return; }
+    const set  = AUTH[pendingArea] || {};
+    const users= set.USERS || {};
+    const salt = set.SALT || '';
+
+    const stored = users[email];
+    if(!stored){ errEl.textContent='بريد غير مخوّل لهذه الصلاحية.'; return; }
+
+    const hash = await sha256Hex(pass + ':' + salt);
+    if(hash === stored){
+      sessionStorage.setItem('abs_user_' + pendingArea, email);
+      closeLogin();
+      showSection(pendingTarget || (pendingArea==='stats' ? 'stats' : 'register_home'));
+      pendingTarget = null;
+    }else{
+      errEl.textContent='كلمة المرور غير صحيحة.';
+    }
+  }
+  function doLogout(area){
+    if(area==='stats' || area==='reg'){
+      sessionStorage.removeItem('abs_user_' + area);
+    }else{
+      sessionStorage.removeItem('abs_user_stats');
+      sessionStorage.removeItem('abs_user_reg');
+    }
+    alert('تم تسجيل الخروج.');
+    pendingTarget = null;
+    document.querySelectorAll('.wrap > .card').forEach(div=>div.classList.add('hidden'));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  /******************************************************************
+   * تعريف المسارات (Stage/Course/System)
+   * حقول كل مادة: name + sheet + excelUrl + scriptUrl
+   ******************************************************************/
+
+  /*  المرحلة الأولى – الكورس الأول – الصباحية  */
+  const ST1_CR1_MORNING = {
+    theory: [
+      {name:"رياضيات",      sheet:"W1", excelUrl:"https://docs.google.com/spreadsheets/d/1Hvs5EouOMLdEQG8KWKWEp3Nj1NdWNlCS35wmjO1QpUE/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbxuyHKIDhncv1Cl-Hv7alzKJEbCqaGCSZMs8MlnuINmp5tBCGy3uijrsFxhZu7_o2Ph/exec"},
+      {name:"اللغة العربية", sheet:"W2", excelUrl:"https://docs.google.com/spreadsheets/d/1P_Lu34O1Hai7_VTlgh0MMv0NaBmbTGUahoGFgwZmFaE/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbzASD2kGLITj60illSbD8Wcy36SfCWT613QfxOFcIopElpZ8oSj04aNi3dXM7y4Hs8UXQ/exec"},
+      {name:"المنطق المحدد", sheet:"W3", excelUrl:"https://docs.google.com/spreadsheets/d/1O21sAd-zAmL4CoCaexYPZzl4zcidb6fojqW-VS2ZgQY/edit?gid=602452113#gid=602452113", scriptUrl:"https://script.google.com/macros/s/AKfycbypW8nupQBLnpxOvfZS-l85vXن1jMQAkW9iJHfEuretD5AqHafGS0V2TWo4XXg2uLqq/exec"},
+      {name:"حاسوب",       sheet:"W4", excelUrl:"https://docs.google.com/spreadsheets/d/1VY20Mbf-8h2qpllc4m11idzOvUXcF1So-CZx2g9FrhQ/edit?usp=drive_link", scriptUrl:"https://script.google.com/macros/s/AKfycbzJZpvMLKH2pabMn7Y0nUwPCmqp47Cj0Rر5dvzy7X36KZZCqCGugbbbJRJs9WmZIEql/exec"},
+      {name:"ديمقراطية",   sheet:"W5", excelUrl:"https://docs.google.com/spreadsheets/d/1KIxWcKl7s8QHfUn4U2KGbdgSXRS2-tYhc_X8DlVMmLI/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbwLC91zB7J5aPWHADH8BMVFf-R1BOp9KMzvioWr5h4olN00PZGJHUOfNux0ZTwaGbSQ2w/exec"},
+      {name:"فيزياء",      sheet:"W6", excelUrl:"https://docs.google.com/spreadsheets/d/1_hER5IZ4qbREMosUIeq8JJn60f_0rFx38w3zPGOGzIM/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbzwfehtO_-8DlG7LSjPPb8WsUB9pYnOKSFQR7c548G6eVDx0UNE71EupGja6xFHuQXtHg/exec"},
+      {name:"رسم هندسي",   sheet:"W7", excelUrl:"https://docs.google.com/spreadsheets/d/1vZ8GaoYFvbej2dWybabl0Lin7SxIwl-esFvWIx6HsVk/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbwY03Knnb6j9mvqKCi2pwkkBnWZTLqC7PSMsSPUksbcnQrzUa_bFLfuEue8lkfQeFTLtQ/exec"},
+    ],
+    drill: [
+      {name:"تمارين رياضيات",     sheet:"W8",  excelUrl:"https://docs.google.com/spreadsheets/d/1btjQ7JJN3URP3px-fuTMbhxjxrEATA6jNtYXXeyqtyw/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbxXMuL8innEASs6O8O_3Lb3p_r7l2ERvSCff77RTfdMTD9Z3drKqUKxztFf4rAvPoTPUg/exec"},
+      {name:"أونلاين رياضيات",     sheet:"W12", excelUrl:"https://docs.google.com/spreadsheets/d/1KyIC728DTtIXxG8P2FTHlXxp8FTz6afiIb5MHHVBRNY/edit?gid=373211169#gid=373211169", scriptUrl:"https://script.google.com/macros/s/AKfycbwZ7M9X-ZgxWUJ_gJ8bDO67NpsX2TK8w74BMZiuiQMNTDG-C4GbbrgeHEQQtTV0P9n4/exec"},
+      {name:"تمارين المنطق المحدد", sheet:"W14", excelUrl:"https://docs.google.com/spreadsheets/d/1G7-ofxx2i9GN3YDnER6Nwk-eRpxW56i7ObytHXD9i60/edit?usp=drive_link", scriptUrl:"https://script.google.com/macros/s/AKfycbzRNUNk5XcP34OUKGYDW4SF6DIQ_duMGOlOCHYROBeM46LJNsbsXxv_imcMfKVG112c/exec"},
+      {name:"تمارين فيزياء",      sheet:"W11", excelUrl:"https://docs.google.com/spreadsheets/d/1HtzIfaT7txhKErfA1N0U-RS0e7hqmTXX0Shj3ciFUcE/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbwKVkhD1PUhHXKnQZvy4sw0dbVf2زKiuX2ox-iVKI3khomC57cLN38O47zsnFcUJODuew/exec"},
+    ],
+    lab: [
+      {name:"مختبر الرسم الهندسي", sheet:"W13", excelUrl:"https://docs.google.com/spreadsheets/d/1KfplcY88qq-q4W6S1uC-akvacBz5Q9_uuwu3xbi3Oi0/edit?usp=drive_link", scriptUrl:"https://script.google.com/macros/s/AKfycbxYz6fkekzHbWزCIzHFOjXuEdvuWfRK0vh9kP_IPG55-yHexQvrxe_S2PvflUZePng-Zw/exec"},
+      {name:"مختبر الفيزياء",     sheet:"W9",  excelUrl:"https://docs.google.com/spreadsheets/d/1GLp1_76zd5G7dlaSgpu4n2C82ax2YcP05iM08HZKUZE/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbyyB7FdnwatwHsgiKeb83Wac_Nsg6IicB1CnIQJGsukI19pOskgveichZY4RVCsdfyT9g/exec"},
+      {name:"مختبر الحاسوب",      sheet:"W10", excelUrl:"https://docs.google.com/spreadsheets/d/1nvEtHavqHpYwMAHvUx0ldAihxh7ueeKr0uKMnJtcG9s/edit?gid=177920887#gid=177920887", scriptUrl:"https://script.google.com/macros/s/AKfycbxirH3aBqqRxnQlO4uYdXATDKX9IozkwmmL6BF4cMM6FUnVFA6Ydd7Fbl0PFNWSMNEF/exec"},
+    ]
+  };
+
+  /* المرحلة الأولى – الكورس الأول – المسائية  */
+  const ST1_CR1_EVENING = {
+    theory: [
+      {name:"رياضيات",      sheet:"N1", excelUrl:"https://docs.google.com/spreadsheets/d/1adZEZA66kTzXi7pw9h_ZFPsRGFjp2aiE2ZSaSlsduLg/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbzllYaoH3RL4bqqA1JI_HEWGb27cBFcsABXhJy5LJpLa8ggDUstI-IdnjsVpOLIhJg/exec"},
+      {name:"اللغة العربية", sheet:"N4", excelUrl:"https://docs.google.com/spreadsheets/d/1jDS0GjVrWeSCddY3UZ9neaP6w0NAVk7957Qf-esfvpc/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbxVD_he3f21Y4Y3CDXPHcIEUyrrLy7VuRsEyRIi0H2LXTV-GdjjXfN5MaU4Fx9qTrpN/exec"},
+      {name:"المنطق المحدد", sheet:"N5", excelUrl:"https://docs.google.com/spreadsheets/d/13OQfkpjD-N8YeF8yt--HsEdatl1xyyBWHuErLrFnjk8/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbxBeI_GQkV7KLs-EduZc9FgaNx2KxIMQiY-pkuMfZYOLeM5BvZJeMwjx2ZhCL6Eo7AR/exec"},
+      {name:"حاسوب",       sheet:"N2", excelUrl:"https://docs.google.com/spreadsheets/d/1AMwpnhhvTErU8YNMx-EvIfUi8tN0LsPPAIwJxY_mXB0/edit?gid=367851700#gid=367851700", scriptUrl:"https://script.google.com/macros/s/AKfycbygeH0QXzFo1XHmCHrmrCoVbiSoXDOhoM0XbxBSنFIs2mlMkBqYZxqoLI3hdN3G0Ktk/exec"},
+      {name:"ديمقراطية",   sheet:"N6", excelUrl:"https://docs.google.com/spreadsheets/d/19uYy4VBqMvBw2A_seGPCtPTZhNMhO4ECMdH2X8eUmCc/edit?gid=2086936420#gid=2086936420", scriptUrl:"https://script.google.com/macros/s/AKfycbzHNumVeIU_zAbhiqJXKjgikkRNXd4Vl9M8zoeXDyz2D9FbJnHswTNH1jZ6HoAHl7nh/exec"},
+      {name:"فيزياء",      sheet:"N3", excelUrl:"https://docs.google.com/spreadsheets/d/1wGztl6__2h66LdkZngXdqB_jf89IOtTdwxdWv0b9rJM/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbxAQVeopIO9lDX1F-G4iFrVzQJWf7xcqeyqe0HkGNWSeIUAJkmqWNDFTd_QB8inFdffdA/exec"},
+      {name:"رسم هندسي",   sheet:"N7", excelUrl:"https://docs.google.com/spreadsheets/d/1oXw3s8vM5Fqimt7rjBMKspYeXGRMJGpbRyzchRCEAA0/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbzQJnYnFOm9din9Xن6GE8qxhMmvaedKWjWCtquPVguFYKy_ZzX0XHSGJV1bf3tT-2I65A/exec"},
+    ],
+    drill: [
+      {name:"تمارين رياضيات",     sheet:"N8",  excelUrl:"https://docs.google.com/spreadsheets/d/17-MdWLw_S7PoRdUpL9lLMcGwDY5oVfZiJD-EwypBF60/edit?gid=744198388#gid=744198388", scriptUrl:"https://script.google.com/macros/s/AKfycbyRm_BUD-nfDyIKbzoLi9z_bL-x6I6WkYOjeS-Y_7GhAoSfdL-IBZGQj1M7HP3Zdb82Lg/exec"},
+      {name:"تمارين المنطق المحدد", sheet:"N11", excelUrl:"https://docs.google.com/spreadsheets/d/1EPwAdiIC3raCOTPQHve30POYHwAEgr1t7Yb5ZytgRlU/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbzncxf30sNgaHqwjplLGRWyزer724JrSYjOTNEjDbLa23r4iQF_ZGLaxRIZCkyhvGXKzQ/exec"},
+      {name:"تمارين فيزياء",      sheet:"N10", excelUrl:"https://docs.google.com/spreadsheets/d/1KJSHBGKlPjHZJbuUp-nsLsDUdX4l7qIvJ401seFfuXM/edit?gid=1958263370#gid=1958263370", scriptUrl:"https://script.google.com/macros/s/AKfycbzT0ARFZpp4c42JQM0waWrJxyOTZmGb3pe4-6Ju4dmlo9bXG0GwHenl0WUITDFuSYHpjA/exec"},
+      {name:"أونلاين رياضيات",     sheet:"N9",  excelUrl:"https://docs.google.com/spreadsheets/d/1wtC5YTGHM8qCVXmyNZaSGxRe066qUurmvKbUn7X23y4/edit?gid=2002564543#gid=2002564543", scriptUrl:"https://script.google.com/macros/s/AKfycbxdooaUTfdTDW7nkg_PLQwJLvWp0CPUUvGWIc_8ribu9-PrC_yJ1T0YF08v2k_MvBtobQ/exec"},
+    ],
+    lab: [
+      {name:"مختبر الفيزياء",      sheet:"N12", excelUrl:"https://docs.google.com/spreadsheets/d/1GdA8rJfthZIhX6RLExF-yy8LrqcZ3ck4GEqIXEEHQpQ/edit?gid=1523284804#gid=1523284804", scriptUrl:"https://script.google.com/macros/s/AKfycbzAozsK6mM4CocZ4dcCCز0HxSHafm6CQ1lvA7GBlYrysKeuhJIPBkYt8hx6J5TنUPxK/exec"},
+      {name:"مختبر الحاسوب",       sheet:"N13", excelUrl:"https://docs.google.com/spreadsheets/d/1JsN0M4dxi6e4qIiNmzdq8fD6EAogJJZU7FLXMXnth-k/edit?gid=2025008236#gid=2025008236", scriptUrl:"https://script.google.com/macros/s/AKfycbzBFQohCb3bWi-WFeWgkpWdHjh8RgOnjbOvcmنqABxMKhEa6piZCidORSEzU8Z5FmRB/exec"},
+      {name:"مختبر الرسم الهندسي",  sheet:"N14", excelUrl:"https://docs.google.com/spreadsheets/d/1iTk2TEYonykRl_gooO7NzA_Q0q2rJ3J6fHuMn2_-iVM/edit?usp=sharing", scriptUrl:"https://script.google.com/macros/s/AKfycbwN1Lod48hSnRfluCزqFK58jp317G3Xd2sN0KmyZSdb3QzfdV620u3JwLUmLYYvMlW3/exec"},
+    ]
+  };
+
+  /*  المرحلة الأولى – الكورس الثاني – الصباحية  */
+  const ST1_CR2_MORNING = {
+    theory: [
+      {name:"دوائر كهربائية",sheet:"E1",excelUrl:"https://docs.google.com/spreadsheets/d/1eF1CHhnAYb3N77V6RzErdyuBTwO3xy1RUiY01AJAI7Q/edit?gid=1330440476#gid=1330440476",scriptUrl:"https://script.google.com/macros/s/AKfycbzbNT_ECbnfgUf_Ml2xw5jqabsbBVacزtwocGnv98D-6S5-Tob7qTP9_zDXza2EDAZن2w/exec"},
+      {name:"هياكل بيانات",sheet:"E2",excelUrl:"https://docs.google.com/spreadsheets/d/1_Alj_C86Uz5yeTNd3cfwTkB0xDYTWCf6vZs7o4cjYR4/edit?gid=763262310#gid=763262310",scriptUrl:"https://script.google.com/macros/s/AKfycbzTxQ6f__y_itvjOiDqOg-ajAG1hXZYiBWQtnOvGXJAYzh8uPszRyASp5h6xxBpDQrZMA/exec"},
+      {name:"اللغة الانكليزية",sheet:"E3",excelUrl:"https://docs.google.com/spreadsheets/d/1MyURtizgdaXiGSykZLA826PNhBW-d_-dQBH2NrCWVhM/edit?gid=1992333078#gid=1992333078",scriptUrl:"https://script.google.com/macros/s/AKfycbzAotx8ن06KTRT2vknJkb_X7DwcoBajN6KiROzoRLfXsTTE7mBvmlecy8FAXNdqXEugMQ/exec"},
+      {name:"الرياضيات",sheet:"E4",excelUrl:"https://docs.google.com/spreadsheets/d/1v8FnbB5BS9PqbqUAopyjcC10XpIqhYqjjNeIC3JWejE/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbzDl6ABQBZgxBhc15VxAZSH9umoFKGw-CzGXrHzj-Z7N1LBN90p9XZbxyYaCSv-scHHxA/exec"},
+      {name:"الميكانيك الهندسي",sheet:"E5",excelUrl:"https://docs.google.com/spreadsheets/d/1jbXxlog9L7CstayesHBYfeHfvX8tjk7AD7t-0urXVC4/edit?gid=1718522560#gid=1718522560",scriptUrl:"https://script.google.com/macros/s/AKfycbxTB9BqC1ir0Zjd5Pu1Z-1u6rcJu2urigRزEP7ATAj9su4agj8GrGtoRBZsF4-5s4XU/exec"},
+      {name:"الكيمياء",sheet:"E6",excelUrl:"https://docs.google.com/spreadsheets/d/1rwHMS1_GJjCc7Am1uFonxloPTikUNZG-wDnBGwqQ-yg/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbwnTlUhujbFBQElEgmUCiM7-gOOpzPoLPQt8ADbry7_5aot-QDBfRdbFipKo5LH8Rm1oQ/exec"},
+    ],
+    drill: [
+      {name:"أونلاين رياضيات",sheet:"E7",excelUrl:"https://docs.google.com/spreadsheets/d/1ypvVaYQUNRyJVtz0OlpWtj7kXc1oQbMbIZr3IxLWiww/edit?gid=2139420956#gid=2139420956",scriptUrl:"https://script.google.com/macros/s/AKfycbz0bLر922rtPxJ55UcNTeYPZjjIpdA-1jRTNE3wpdkdmqmiQKT83NUo1نTu-wtild8T/exec"},
+      {name:"تمارين الميكانيك الهندسي",sheet:"E8",excelUrl:"https://docs.google.com/spreadsheets/d/1V33aufHKOBXi6XplOri_O9YOH6Zjl989vYedBLLOo9s/edit?gid=1551599754#gid=1551599754",scriptUrl:"https://script.google.com/macros/s/AKfycbzdBnv1QMn8RYVdzhE1RPrZgBCgKB0VrLvHyTpEhBlyu6S5ix04f8q7noIwhY_HoncVtw/exec"},
+      {name:"تمارين الرياضيات",sheet:"E9",excelUrl:"https://docs.google.com/spreadsheets/d/1wNdLDddYTRRvVzZWys3ylhBZd2PqnjRSrMIlrxnfTS0/edit?gid=846144794#gid=846144794",scriptUrl:"https://script.google.com/macros/s/AKfycbwUQBt4tGoIawsw5tdنGTEIGm3F9xa22J0o8DRXunY1UA0ZLdgTEFiedjaT8RKHa-KO/exec"},
+    ],
+    lab: [
+      {name:"مختبر الدوائر الكهربائية",sheet:"E10",excelUrl:"https://docs.google.com/spreadsheets/d/133TNmaJrHWmg1u4kihairLzKp-YEulgod95KV1izpPM/edit?gid=992900395#gid=992900395",scriptUrl:"https://script.google.com/macros/s/AKfycbxNSMO-OSCjIo73bsFCن_msKjPV5bN5i2CWUG-4gfdyD0aQhINmAqRkXpS2S31VZEPE/exec"},
+      {name:"ورش",sheet:"E11",excelUrl:"https://docs.google.com/spreadsheets/d/1GNT9JwL6_llvaEk64ZRTNzqfk8fGdGAEMvP52FVUWNE/edit?gid=2109585699#gid=2109585699",scriptUrl:"https://script.google.com/macros/s/AKfycbxLk5SirjF9GFUqDOrqdRLpTwgC474HFuXByoooXTh39t1DykmCSY_rI8JjbaaTI9VR/exec"},
+      {name:"مختبر هياكل البيانات",sheet:"E12",excelUrl:"https://docs.google.com/spreadsheets/d/1kaBPmwxANyQ2tjLsXdBlIKGYgXfAUnALG4fSx2VoKBk/edit?gid=1269669553#gid=1269669553",scriptUrl:"https://script.google.com/macros/s/AKfycbwvJdexDxc94Fi1EP_KRDMنRfReo2m5XB0xrCre5SQI-wbYC9rXXf8mg3fyC55CZNB0wg/exec"},
+      {name:"مختبر الكيمياء",sheet:"E12",excelUrl:"https://docs.google.com/spreadsheets/d/1V2DFa7jZ73o2rAKPJUzSzUeVtEVUf6BWI40ClBwFPJs/edit?gid=1125720844#gid=1125720844",scriptUrl:"https://script.google.com/macros/s/AKfycbwDzPjogxPQلVUsA7FxQlBLa_iNZ43S-HUf1tmAxQPNWHT9v5DVFbqMR01H_HCwwexzkg/exec"},
+    ]
+  };
+
+  /* المرحلة الأولى – الكورس الثاني – المسائية  */
+  const ST1_CR2_EVENING = {
+    theory: [
+      {name:"دوائر كهربائية",sheet:"O1",excelUrl:"https://docs.google.com/spreadsheets/d/1MdVPTfQcw8A2ZZAZNAl2hU9WigQ6BqNcHVP7TK68NhY/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbyw08igm-rx29FUpu625jyPQ3eH5zawxUK0XJI1iHg-4olq0QwxDzkOUd3GC2tuLlxu/exec"},
+      {name:"هياكل بيانات",sheet:"O2",excelUrl:"https://docs.google.com/spreadsheets/d/1mhTvlR11O0CCz7wy5xjBSlxCxtp91aKt1Ycu2lJRiGI/edit?gid=1537441019#gid=1537441019",scriptUrl:"https://script.google.com/macros/s/AKfycbx-ZYTP-5t6rOTHsKG0ز8ptdi6TW3lQRqDqJ3KolIY3qeYkKqWDpqCYRm99pXFuTq7hpA/exec"},
+      {name:"اللغة الانكليزية",sheet:"O3",excelUrl:"https://docs.google.com/spreadsheets/d/1lxs-yb1DrgPq_YeD2IJi-ue07z1TCdzOCj_e-c1rsug/edit?gid=1491193961#gid=1491193961",scriptUrl:"https://script.google.com/macros/s/AKfycbzNX4zdUEomccHpJSن2XGxvy0ND42yuPDwQIhFs15kizOQRLs3-RgU8TS_JF6Y3L0918w/exec"},
+      {name:"الرياضيات",sheet:"O4",excelUrl:"https://docs.google.com/spreadsheets/d/16dh922P7voMa_krJirVtu7H2ByOF1iTDqBGz3aVXzCo/edit?gid=753952949#gid=753952949",scriptUrl:"https://script.google.com/macros/s/AKfycby8H7L0GuG1Ipjl7CyUeTrdfqxvpkزGj_g5dYeLihHDbwWGzcjmuLmtHhqu8IEljFNX/exec"},
+      {name:"الميكانيك الهندسي",sheet:"O5",excelUrl:"https://docs.google.com/spreadsheets/d/1JhCSsvxaInuZWwFgZFH0MElwWzkHjLuT79ZlA3DR3AQ/edit?gid=1200019667#gid=1200019667",scriptUrl:"https://script.google.com/macros/s/AKfycbx8qFGFWrD9-KرmxSIqyyrdejjuJvdG98tvslsBKCirMmLWAWGP-DYmLr_MVAM6CO8PCQ/exec"},
+      {name:"الكيمياء",sheet:"O6",excelUrl:"https://docs.google.com/spreadsheets/d/1SS2M5H5AaLPCV5JYZW7HKzdV7ZWBrUdttbpNAvIUEfg/edit?gid=371111431#gid=371111431",scriptUrl:"https://script.google.com/macros/s/AKfycbyH74KRيPmiix0H1ixeibvrhsofjkDzolTj0Dv3V2xHy-Wو7cnFi2TE2IbK31zIbSL1/exec"},
+    ],
+    drill: [
+      {name:"تمارين رياضيات",sheet:"O13",excelUrl:"https://docs.google.com/spreadsheets/d/12poDIvmkZDsqGokJl0PmW6ngSUDf3arCnBDWjNmKf_o/edit?gid=158664678#gid=158664678",scriptUrl:"https://script.google.com/macros/s/AKfycbydmlJZVQ7vv4Fwp6زZ1dClU-54NPOwPznYZOkoKZdL2QLocHp27MTlGO0XlhP5EAvn/exec"},
+      {name:"تمارين الميكانيك الهندسي",sheet:"O12",excelUrl:"https://docs.google.com/spreadsheets/d/1PLFfgDid8iGsiO9xXvWFxaPnVE4T9Ir3AZuNc7_EMqI/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbzVQnK9-H4x_3hnZAikcghykKGMh1BYsDGHHwLa0mCmMlA-1pyp1KY6R8TmDl4MJkTg/exec"},
+      {name:"أونلاين رياضيات",sheet:"O11",excelUrl:"https://docs.google.com/spreadsheets/d/13v_gxm6ANeQ3Jmiv9SqKv984SAuU_od7EdmcDYAWiM8/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbyLmHu7XMct9MWTjR67jUhQ5buWuguLvN44O_fIqyZxK0sJvcYWh40HJsm82ABvRwW32g/exec"},
+    ],
+    lab: [
+      {name:"مختبر الدوائر الكهربائية",sheet:"O7",excelUrl:"https://docs.google.com/spreadsheets/d/1HjwLCFCPqrJaGr3NT57NoSKC05e3e2J7Hwdfe5IKDjM/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/AKfycbx3Cs1Woxم7v7XtObrbiJIiL_SrO75WrGUzHP5YownAEzoS-24Qiza_5W-MZsBVjxeu/exec"},
+      {name:"ورش",sheet:"O8",excelUrl:"https://docs.google.com/spreadsheets/d/1_ddbj1YL3XZPaGDMS4jfw6rG0yOrVfN-PAr_KenOHds/edit?gid=1079412085#gid=1079412085",scriptUrl:"https://script.google.com/macros/s/AKfycbxJsaA46IxeKs3ttVdd00ad6LCjTGpG3لHH8iBuRsh2z85pkUGN90xQ7H4YnA9omWlO/exec"},
+      {name:"مختبر هياكل البيانات",sheet:"O9",excelUrl:"https://docs.google.com/spreadsheets/d/1cUQ882e7z9lldVjgANNReNujynckiorkavljG6_ro1w/edit?gid=162222788#gid=162222788",scriptUrl:"https://script.google.com/macros/s/AKfycbxPT9eXNW1jFVKyXwpcaL5B7snGn9icWEgW-UMFOJhRXZhT5Fi04ن_3VLdR1TceTtgN/exec"},
+      {name:"مختبر الكيمياء",sheet:"O10",excelUrl:"https://docs.google.com/spreadsheets/d/1GhwH1Y9ulqGVYXDL43hEuInz5fs6I6_nglQr8yMRPT0/edit?gid=28510163#gid=28510163",scriptUrl:"https://script.google.com/macros/s/AKfycbyRf_Do48EGU35aXgsO4wBduuCjHYبXS0MK0fc3eLYqAyOfoavKQjBmk8XdDbFvX6tf/exec"},
+    ]
+  };
+
+  /* ====== المرحلة الثانية – الكورس الأول (Placeholders) ====== */
+  const ST2_CR1_MORNING = {
+    theory: [
+      {name:"اللغة الانكليزية",sheet:"p1",excelUrl:"https://docs.google.com/spreadsheets/d/1y1y__kX7HZxl7WvLeTyxJ08t5xDAqzzDXfmdY5k_KCo/edit?gid=1243592513#gid=1243592513",scriptUrl:"https://script.google.com/macros/s/AKfycbzPB1VXsM6U2u4ps3pcmBkNziohTAIKvXdNoTLkUapZMYCRSqQ-RQj01RpDr_0pAy_-/exec"},
+      {name:"مبادئ الادارة",sheet:"p2",excelUrl:"https://docs.google.com/spreadsheets/d/1Lg-KNYKW_TVn3msNLmxNGE1B9qa2hQfFAgzr9AHScyM/edit?gid=2058670030#gid=2058670030",scriptUrl:"https://script.google.com/macros/s/AKfycbwwTtJ1-d2UPP6TJMyUT-MiJ45ckhGTRf2ccwaIrWkl5GAsCD7J_Hre4vaiZSUq50G8Aw/exec"},
+      {name:"مقدمة في الانظمة الميكانيكية",sheet:"p3",excelUrl:"https://docs.google.com/spreadsheets/d/1zJVK3iRTHRYM0049nUiKMCO1I1da_H9bgBjTtLenKXg/edit?gid=1610732058#gid=1610732058",scriptUrl:"https://script.google.com/macros/s/AKfycbzybUL7iJv1NXH5iKnZYSaX1mRLF58uE7bZm8mD88La3udWnWsISJu_VA1EsBJ6VNh4uA/exec"},
+      {name:"الرياضيات الهندسية",sheet:"p5",excelUrl:"https://docs.google.com/spreadsheets/d/1-dl1_nC6XX_5VkRUCg6DkJNWdX0kTfZVRXDHaIL95jw/edit?gid=1757964125#gid=1757964125",scriptUrl:"https://script.google.com/macros/s/AKfycbxR0DBQuu2AuSpGDlJCRfNnzloK8cfvzWhl8TUZZuuAuKW8Fwu2kappNCVagWJ8hTKx/exec"},
+      {name:"مقدمة في الالكترونيات",sheet:"p6",excelUrl:"https://docs.google.com/spreadsheets/d/1iadZsgaf46xp4o3Qrs7afCImaSF7W3z8A9p792CLhOo/edit?gid=1930399448#gid=1930399448",scriptUrl:"https://script.google.com/macros/s/AKfycbznoOdPegzl8gr8SEbQcfcH1Wpqaxv07uom5xrYCT8L9lRcp4cHmgBmO6GtaCfvWfAg/exec"},
+
+{name:"المتحسسات ومعالجة الاشارة",sheet:"p9",excelUrl:"https://docs.google.com/spreadsheets/d/1AanQioHo31shVQNjmHDNB257KfL06wQM-ArZCkGLUpE/edit?gid=1142569521#gid=1142569521",scriptUrl:"https://script.google.com/macros/s/AKfycbymgbnIIW_eGHmC6WGHY-cdXA-XDkUNm622UDY7i_0RFOLaPK6zclBnXEqr2_-m0GKNcQ/exec"},
+
+
+{name:"الحاسوب 2",sheet:"p11",excelUrl:"https://docs.google.com/spreadsheets/d/1y6STBJmNmWbZFOs7rENiK_nzYiTBDLJj3ODncJX4jZM/edit?gid=257503584#gid=257503584",scriptUrl:"https://script.google.com/macros/s/AKfycbyHZizAWCt3PhTAVfyxhz3AWW5yQMqJW2f6fzorGoCdt6wEJW2Q5OVs5k4ZmoMmZi5k/exec"},
+    ],
+
+
+
+    drill: [
+      {name:"تمارين مقدمة في الانظمة الميكانيكية",sheet:"p4",excelUrl:"https://docs.google.com/spreadsheets/d/1ys5vT4aFBDDVaS85RAxGw4a5sZnbvtxEuM6EBqXm2CI/edit?gid=24451379#gid=24451379",scriptUrl:"https://script.google.com/macros/s/AKfycbyqaKorpceeoCgOk55xiZn-paE8kBcT9Z3iY8Yh_1v-NKFGP-I9i2Lq-WPsYHD04uFH/exec"},
+
+
+      {name:"اونلاين المتحسسات ومعالجة الاشارة",sheet:"p8",excelUrl:"https://docs.google.com/spreadsheets/d/1ul4vRhWtMHePRk3FUEImLdNTGLCL_-rjUM9rQ08RK4s/edit?gid=978998122#gid=978998122",scriptUrl:"https://script.google.com/macros/s/AKfycbzIZPfrwmeoezDmF32iri2yXxDEtwx8WBaKq3eL0rJOMh5cNF_bY78aMBrIV4Kz5-Xp/exec"},
+
+
+    ],
+
+
+
+    lab:[{name:"مختبر مقدمة في الالكترونيات",sheet:"p7",excelUrl:"https://docs.google.com/spreadsheets/d/1dOlnk6PVOzGGoS_LWdGZRJoftuMlkVuT8XtrrXPNX9M/edit?gid=1678505018#gid=1678505018",scriptUrl:"https://script.google.com/macros/s/AKfycbyDZVBWd1c_yXonRxoTKxGWaqlKhqDTkdf4zYmlZhROdWEof84H5wUVxwx4kJlR7Ho6/exec"},
+
+
+{name:"مختبر المتحسسات ومعالجة الاشارة",sheet:"p10",excelUrl:"https://docs.google.com/spreadsheets/d/1XxffC7pcPQGWW2L1mgAtuLX0ivfSUx8WOlEvoEbXBGE/edit?gid=169871575#gid=169871575",scriptUrl:"https://script.google.com/macros/s/AKfycbx217JtOA18lcTB-E6DOHUV8f5RhxrultgOPo-6xGRTxgRVIihy8FUnx7htvuE-tKUbpA/exec"},
+
+
+{name:"مختبر الحاسوب 2",sheet:"p12",excelUrl:"https://docs.google.com/spreadsheets/d/1OnFuUoef87BzmwI4XgLRF1wLusx2ZYiQ_h1Lh24B_Jg/edit?gid=1573270597#gid=1573270597",scriptUrl:"https://script.google.com/macros/s/AKfycbxOx9K8BQOpF-zHFo2foSVlauQwY-Kp1TZrNlpMpGazF313aPCFiZ7dCRLO12auG7hopw/exec"},
+]
+  };
+
+
+
+
+
+
+  const ST2_CR1_EVENING = {
+    theory: [
+      {name:"اللغة الانكليزية",sheet:"v1",excelUrl:"https://docs.google.com/spreadsheets/d/1YTA3UesRNRBaHVhwbjpjShD2wr3bYJMhDVr3nabisUg/edit?gid=1222864286#gid=1222864286",scriptUrl:"https://script.google.com/macros/s/AKfycbxzWuXiUD8z7KbnivBfaDWGvf9rAR74ZWLngh7g92c4FQmigz1kZpC-iDxJn3XSh3PXow/exec"},
+      {name:"مبادئ الادارة",sheet:"v2",excelUrl:"https://docs.google.com/spreadsheets/d/1EYvuj2AeXIC3-VP4Gzt0DW1jFTj0RMJW8dBoyFfrheY/edit?gid=1236771527#gid=1236771527",scriptUrl:"https://script.google.com/macros/s/AKfycbxoaSCC6y0kOD4kviFn37ieGJE7AvdkvITemMcC0SzTrGtGdri1_FKsNu_kWSAAH9rhGA/exec"},
+      {name:"مقدمة في الانظمة الميكانيكية",sheet:"v3",excelUrl:"https://docs.google.com/spreadsheets/d/1cUpwHCxEpNq-RmTx8gDoOD1APqaY5uWg_EdNbMAFsdE/edit?gid=687059033#gid=687059033",scriptUrl:"https://script.google.com/macros/s/AKfycbzS9nYYBWGg2R1vrC-sGK5yvOjseUIGSMH20HAY6lY-dySRWlfOISTFc8e_ORv9VEe7_A/exec"},
+     {name:"الرياضيات الهندسية",sheet:"v5",excelUrl:"https://docs.google.com/spreadsheets/d/1YWCQZgLBYlt6LstqtCiBmn-hJxEMVlFXad3R3uZVClk/edit?gid=454635820#gid=454635820",scriptUrl:"https://script.google.com/macros/s/AKfycbyfL494JFn1tLaA6MWm-5dE2RnkVDpZ3Zu1-q-QcQEzlrXFbOBRo7GovIDhhCUUHoz0/exec"},
+      {name:"مقدمة في الالكترونيات",sheet:"v6",excelUrl:"https://docs.google.com/spreadsheets/d/1b8cQm3_xBRgu7Q0tWymJnoLEWZ7122k3A8Ri3Mzt6dc/edit?gid=94772072#gid=94772072",scriptUrl:"https://script.google.com/macros/s/AKfycby6ycsNocfsqq90qeKmmpWSWzI8LKT3RUULBMOwZxX5aTeEZK6DilyLaVmwHBe4BRfdvA/exec"},
+{name:"المتحسسات ومعالجة الاشارة",sheet:"v9",excelUrl:"https://docs.google.com/spreadsheets/d/1cXlTm2f5E6Vxqwh43XzYUiyGD1K-89EocK4veOEhcTk/edit?gid=750949142#gid=750949142",scriptUrl:"https://script.google.com/macros/s/AKfycbzAo9U_f1zWAwOMtc5Zl3V3qVi1CX7OrbCB6jYWs2LShHpSO_QU4keEfRJ6ZVoDrkVA/exec"},
+{name:"الحاسوب 2",sheet:"v11",excelUrl:"https://docs.google.com/spreadsheets/d/12VgsyuoKOwtUabrEd6eB5Xa2y0uS1xBQw73RMiK680M/edit?gid=819167452#gid=819167452",scriptUrl:"https://script.google.com/macros/s/AKfycbzjX0D85uhAVb8cEqDbsJT_0L3EsBzop57VH4qRb_M6TxyTfVbms_5s0Ki4p5oVRbpp/exec"},
+    ],
+
+    drill: [
+      {name:"تمارين مقدمة في الانظمة الميكانيكية",sheet:"v4",excelUrl:"https://docs.google.com/spreadsheets/d/1mATAWlAcJtyKzVvzuGgj_An14ZnwxjLEe6K_j-XLknQ/edit?gid=1792609808#gid=1792609808",scriptUrl:"https://script.google.com/macros/s/AKfycbzhDmxWLdCA1w7h4JCVKIjFp3xlBBSjNux-5U2oCwboHo7JoE35i7KdZMQv7KHQJFRs/exec"},
+      {name:"اونلاين المتحسسات ومعالجة الاشارة",sheet:"v8",excelUrl:"https://docs.google.com/spreadsheets/d/1ZvgMyG4yhGudFrUpPRInafsPYrJdHBedKgtT1dLXsoM/edit?gid=96843277#gid=96843277",scriptUrl:"https://script.google.com/macros/s/AKfycbyb3L58rZ6TfjKNRQP56lUv5stClssGCTvJ57sAxJXXTfbnH1K8ZuYtz5c0jyT0X6H8/exec"},
+    ],
+
+    lab:[{name:"مختبر مقدمة في الالكترونيات",sheet:"v7",excelUrl:"https://docs.google.com/spreadsheets/d/1QpIUc6LPeY3JECrAcsSz4rLfIagW37u-2OYwdp9V7d0/edit?gid=1442783510#gid=1442783510",scriptUrl:"https://script.google.com/macros/s/AKfycbxUuDKh7c1jTN1thrJ9Eo9dAGtmq2jBmj2xBOlpoCFxpUYTm9zXREjZt3bm1L2eZ2FL4w/exec"},
+{name:"مختبر المتحسسات ومعالجة الاشارة",sheet:"v10",excelUrl:"https://docs.google.com/spreadsheets/d/1CnQiycHERvHYfvdhR_dFjc48CVgpJSk0RWyeJ0qFeeQ/edit?gid=395288973#gid=395288973",scriptUrl:"https://script.google.com/macros/s/AKfycbzxFrkp3u2mQQHAxjHdhTJQ_aS2T0voD3C6fCjWtcLQmGFdKM3E25oze2L2BZGGbtYa/exec"},
+{name:"مختبر الحاسوب 2",sheet:"v12",excelUrl:"https://docs.google.com/spreadsheets/d/1Kw7_X5RrYuTOnyVhKZQ8Ybd_G_ftI2vlua5e0zQNiE8/edit?gid=472962974#gid=472962974",scriptUrl:"https://script.google.com/macros/s/AKfycbyepp63gmW6XhBQAWN3KhYo5Zes5qUVZpMjsNJyywEoU6FGgQA7dRo0G6LwIVDAS5VbpQ/exec"},
+]
+  };
+
+
+  /* ====== المرحلة الثانية – الكورس الثاني (Placeholders) ====== */
+const ST2_CR2_MORNING = {
+   
+  };'جاري الاعداد'
+ const ST2_CR2_EVENING = {
+    
+  };'جاري الاعداد'
+
+  /* ====== المرحلة الثالثة – Placeholders ====== */
+  const ST3_CR1_MORNING = {theory:[{name:"مادة1",sheet:"t3c1m1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST3_CR1_EVENING = {theory:[{name:"مفردة1",sheet:"t3c1e1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST3_CR2_MORNING = {theory:[{name:"مادة2",sheet:"t3c2m1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST3_CR2_EVENING = {theory:[{name:"مفردة2",sheet:"t3c2e1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+
+  /* ====== المرحلة الرابعة – Placeholders ====== */
+  const ST4_CR1_MORNING = {theory:[{name:"مادة1",sheet:"t4c1m1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST4_CR1_EVENING = {theory:[{name:"مفردة1",sheet:"t4c1e1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST4_CR2_MORNING = {theory:[{name:"مادة2",sheet:"t4c2m1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+  const ST4_CR2_EVENING = {theory:[{name:"مفردة2",sheet:"t4c2e1",excelUrl:"https://docs.google.com/spreadsheets/d/XXXXXXXXXXXX/edit?usp=sharing",scriptUrl:"https://script.google.com/macros/s/XXXXX/exec"}],drill:[],lab:[]};
+
+  /* السجل العام  */
+  const DATA_REGISTRY = {
+    "1": { "1": { morning: ST1_CR1_MORNING, evening: ST1_CR1_EVENING },
+           "2": { morning: ST1_CR2_MORNING, evening: ST1_CR2_EVENING } },
+    "2": { "1": { morning: ST2_CR1_MORNING, evening: ST2_CR1_EVENING },
+           "2": { morning: ST2_CR2_MORNING, evening: ST2_CR2_EVENING } },
+    "3": { "1": { morning: ST3_CR1_MORNING, evening: ST3_CR1_EVENING },
+           "2": { morning: ST3_CR2_MORNING, evening: ST3_CR2_EVENING } },
+    "4": { "1": { morning: ST4_CR1_MORNING, evening: ST4_CR1_EVENING },
+           "2": { morning: ST4_CR2_MORNING, evening: ST4_CR2_EVENING } }
+  };
+
+  /********************** UI التسجيل (فتح Excel) **********************/
+  function fillSubjectsForRegistration(){
+    const cfg = (DATA_REGISTRY[String(currentStage)]?.[String(currentCourse)]?.[currentSystem]) || {theory:[],drill:[],lab:[]};
+    const c1=document.getElementById('list_theory');
+    const c2=document.getElementById('list_drill');
+    const c3=document.getElementById('list_lab');
+    c1.innerHTML=''; c2.innerHTML=''; c3.innerHTML='';
+
+    cfg.theory.forEach(item=>c1.appendChild(makeOpen(item)));
+    cfg.drill .forEach(item=>c2.appendChild(makeOpen(item)));
+    cfg.lab   .forEach(item=>c3.appendChild(makeOpen(item)));
+  }
+  function makeOpen(item){
+    const btn=document.createElement('button');
+    btn.className='button open-btn';
+    btn.textContent= item.name;
+    btn.onclick=()=> {
+      if(item.excelUrl){ window.open(item.excelUrl,'_blank'); }
+      else{ alert('لا يوجد رابط ملف تسجيل (Excel) لهذه المادة حالياً.'); }
+    };
+    return btn;
+  }
+
+  /* أدوات مساعدة للإحصائية */
+  function currentConfig(){
+    return (DATA_REGISTRY[document.getElementById('stageSel').value]
+            ?. [document.getElementById('courseSel').value]
+            ?. [document.getElementById('systemSel').value]) || {theory:[],drill:[],lab:[]};
+  }
+  function flattenNames(cfg){ return [...cfg.theory, ...cfg.drill, ...cfg.lab].map(x=>x.name); }
+  function buildGroupsMap(cfg){
+    const m={}; cfg.theory.forEach(x=>m[x.name]='theory'); cfg.drill.forEach(x=>m[x.name]='drill'); cfg.lab.forEach(x=>m[x.name]='lab'); return m;
+  }
+  function indexByName(cfg){
+    const idx={}; [...cfg.theory, ...cfg.drill, ...cfg.lab].forEach(x=>idx[x.name]=x); return idx;
+  }
+
+  /* الأسابيع */
+  function ensureWeeks(){
+    const wf=document.getElementById('weekFromSel');
+    const wt=document.getElementById('weekToSel');
+    if(wf.options.length===0){
+      for(let i=1;i<=15;i++){
+        const o1=document.createElement('option'); o1.value=i; o1.textContent='الأسبوع '+i; wf.appendChild(o1);
+        const o2=document.createElement('option'); o2.value=i; o2.textContent=i; wt.appendChild(o2);
+      }
+      wf.value=1; wt.value=15;
+    }
+  }
+
+  /* إنذار */
+  function warnText(percent){
+    const p = Number(percent||0);
+    if(p===0) return '';
+    if(p===7) return 'تنبيه';
+    if(p>7 && p<14) return 'إنذار أولي';
+    if(p===14) return 'إنذار نهائي';
+    if(p>14 && p<=21) return 'قرار مجلس كلية';
+    if(p>21) return 'راسب (إعادة المادة)';
+    return '';
+  }
+
+  /*  الإحصائية */
+  async function buildReport(){
+    const cfg      = currentConfig();
+    const groups   = buildGroupsMap(cfg);
+    const indexMap = indexByName(cfg);
+
+    const group  = document.getElementById('groupSel').value;
+    let wFrom    = +document.getElementById('weekFromSel').value;
+    let wTo      = +document.getElementById('weekToSel').value;
+    const onlyAbsent = document.getElementById('onlyAbsent').checked;
+    const minTimes   = Math.max(0, +document.getElementById('minTimes').value||0);
+
+    if(wFrom>wTo){ const t=wFrom; wFrom=wTo; wTo=t; }
+
+    let subjects = flattenNames(cfg);
+    if(group !== 'all'){ subjects = subjects.filter(name => (groups[name]||'theory') === group); }
+
+    const headEl = document.getElementById('statsHead');
+    const bodyEl = document.getElementById('statsBody');
+    headEl.innerHTML=''; bodyEl.innerHTML='';
+
+    if(subjects.length===0){
+      bodyEl.innerHTML = `<tr><td class="muted">لا توجد مواد ضمن الفلتر المختار.</td></tr>`;
+      return;
+    }
+
+    const tr1=document.createElement('tr');
+    tr1.innerHTML = `<th rowSpan="2" style="min-width:60px">رقم</th><th rowSpan="2" style="min-width:220px">اسم الطالب</th>`;
+    subjects.forEach(s=>{ tr1.innerHTML += `<th colSpan="3">${s}</th>`; });
+    headEl.appendChild(tr1);
+
+    const tr2=document.createElement('tr');
+    subjects.forEach(()=>{ tr2.innerHTML += `<th class="small">إنذار</th><th class="small">مرات</th><th class="small">ساعات</th>`; });
+    headEl.appendChild(tr2);
+
+    const byStudent={};
+    for(const subName of subjects){
+      const meta = indexMap[subName];
+      if(!meta || !meta.scriptUrl) continue;
+
+      const sep = meta.scriptUrl.includes('?') ? '&' : '?';
+      const url = `${meta.scriptUrl}${sep}sheet=${encodeURIComponent(meta.sheet||'W1')}&from=${wFrom}&to=${wTo}`;
+
+      try{
+        const res = await fetch(url, {cache:'no-store'});
+        const data = await res.json();
+        const rows = Array.isArray(data) ? data : (Array.isArray(data.rows) ? data.rows : []);
+        rows.forEach(r=>{
+          const name = r.student || r.name || '';
+          if(!name) return;
+          if(!byStudent[name]) byStudent[name] = {name, subs:{}};
+          const times = Number(r.times||0);
+          const hours = Number(r.hours||0);
+          const percent = Number(r.percent||0);
+          let wtxt = (r.warning||'').toString().trim();
+          if(!wtxt){ wtxt = warnText(percent); }
+          byStudent[name].subs[subName] = {times, hours, warning: (wtxt || 'لا يوجد')};
+        });
+      }catch(e){
+        console.warn('API error for', subName, e);
+      }
+    }
+
+    let rows = Object.values(byStudent)
+      .filter(st=> !onlyAbsent || subjects.some(s=> (st.subs[s]?.times||0) >= minTimes ))
+      .sort((a,b)=> a.name.localeCompare(b.name,'ar'));
+
+    if(rows.length===0){
+      bodyEl.innerHTML = `<tr><td class="muted" colspan="${2+(subjects.length*3)}">لا توجد سجلات ضمن النطاق المختار.</td></tr>`;
+      return;
+    }
+
+    rows.forEach((st,i)=>{
+      const tr=document.createElement('tr');
+      let html = `<td>${i+1}</td><td style="text-align:right">${st.name}</td>`;
+      subjects.forEach(s=>{
+        const v = st.subs[s] || {times:0,hours:0,warning:'لا يوجد'};
+        const hasWarn = (v.warning && v.warning !== 'لا يوجد') && ((v.times||0) > 0 || (v.hours||0) > 0);
+        const cls = hasWarn ? ' class="warn-cell"' : '';
+        html += `<td${cls}>${v.warning || 'لا يوجد'}</td><td${cls}>${v.times||0}</td><td${cls}>${v.hours||0}</td>`;
+      });
+      tr.innerHTML = html;
+      bodyEl.appendChild(tr);
+    });
+  }
+
+  /*************** تشغيل أولي ***************/
+  window.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.wrap > .card').forEach(div=>div.classList.add('hidden'));
+    ensureWeeks();
+    document.getElementById('stageSel').value = '1';
+    document.getElementById('courseSel').value = '1';
+    document.getElementById('systemSel').value = 'morning';
+  });
+</script>
+
+<!-- ذيل الصفحة داخل body -->
+<div class="site-footer">
+  <p>إعداد وتصميم التدريسية: شيماء مظفر هاشم</p>
+</div>
+
+</body>
+</html>
